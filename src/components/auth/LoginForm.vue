@@ -24,7 +24,11 @@ async function handleSubmit() {
     const response = await login({ email: email.value, password: password.value })
     authStore.setSession(response.accessToken, response.user)
     emit('success')
-    router.push('/client/home')
+    if (response.user.role === 'RIDER') {
+      router.push({ name: 'rider-board' })
+    } else {
+      router.push({ name: 'client-home' })
+    }
   } catch (error) {
     errorMessage.value = 'Credenciales inválidas. Verifica tu correo y contraseña.'
   } finally {
