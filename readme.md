@@ -1,7 +1,15 @@
 
 # DeliveryFlash - Frontend
 
-Aplicación web del cliente para DeliveryFlash, construida con **Vue 3**, **TypeScript**, **Vite**, **Pinia** y **Tailwind CSS**.
+Aplicación web de DeliveryFlash (Cliente y Repartidor), construida con **Vue 3**, **TypeScript**, **Vite**, **Pinia** y **Tailwind CSS**.
+
+Este proyecto es uno de **3 repositorios** que conforman el sistema completo. Para tener todo funcionando localmente necesitas los 3:
+
+| Repo | Qué es | URL |
+|---|---|---|
+| `data-base` | `docker-compose.yml` para levantar PostgreSQL | https://github.com/Delivery-Flash/data-base |
+| `Backend` | API NestJS + Prisma (auth, pedidos, WebSocket) | https://github.com/Delivery-Flash/Backend |
+| `Frontend` | Esta app (Vue) | https://github.com/Delivery-Flash/Frontend |
 
 ## Stack tecnológico
 
@@ -14,6 +22,7 @@ Aplicación web del cliente para DeliveryFlash, construida con **Vue 3**, **Type
 | Estado global | Pinia |
 | Estilos | Tailwind CSS |
 | Cliente HTTP | Axios |
+| Tiempo real | socket.io-client |
 | Linter / Formato | ESLint + Prettier |
 
 ---
@@ -22,100 +31,145 @@ Aplicación web del cliente para DeliveryFlash, construida con **Vue 3**, **Type
 
 - **Node.js** v18 o superior → verifica con `node -v`
 - **npm** (viene con Node.js) → verifica con `npm -v`
-- El **backend de DeliveryFlash corriendo** en `http://localhost:3000` (ver el README del repositorio `Backend/`)
-## Instalación desde cero
+- **Docker** y **Docker Compose** → para levantar PostgreSQL (ver paso 1 abajo)
+
+---
+
+## Cómo levantar el proyecto completo (los 3 repos)
+
+Clona los 3 repositorios como carpetas hermanas:
 
 ```bash
-# 1. Clonar el repositorio
-git clone <url-del-repositorio>
-cd delivery-flash-fe
+git clone https://github.com/Delivery-Flash/data-base.git
+git clone https://github.com/Delivery-Flash/Backend.git
+git clone https://github.com/Delivery-Flash/Frontend.git
+```
 
-# 2. Instalar dependencias
+### 1. Base de datos (`data-base/`)
+
+```bash
+cd data-base
+docker compose up -d
+```
+
+Esto levanta PostgreSQL 16 en el puerto `5432` con la base `delivery_flash` (usuario/contraseña: `usuario`/`usuario`). Verifica que esté corriendo con `docker ps`.
+
+### 2. Backend (`Backend/`)
+
+Crea un archivo `.env` en la raíz del repo:
+
+```env
+DATABASE_URL="postgresql://usuario:usuario@localhost:5432/delivery_flash?schema=public"
+PORT=3000
+JWT_SECRET="cambia_esto_por_algo_seguro"
+JWT_EXPIRES_IN="1d"
+```
+
+Luego:
+
+```bash
 npm install
+npx prisma migrate dev
+npm run start:dev
+```
 
-# 3. Levantar el servidor de desarrollo
+La API queda disponible en `http://localhost:3000`.
+
+### 3. Frontend (este repo)
+
+Copia `.env.example` a `.env` (ya viene con los valores correctos para desarrollo local):
+
+```bash
+cp .env.example .env
+npm install
 npm run dev
 ```
 
-Si todo salió bien, la app está disponible en:
+La app queda disponible en `http://localhost:5173`.
 
-```
-http://localhost:5173
-```
+> **Orden recomendado:** primero la base de datos, después el backend, y al final el frontend — cada uno depende del anterior.
 
-> Antes de probar cualquier formulario (login, registro), asegúrate de tener el **backend corriendo** en `http://localhost:3000` — ver sección siguiente.
+---
+
+## Primer uso (no hay usuarios de prueba)
+
+La base de datos arranca vacía, no hay seed. Para probar la app:
+
+1. Entra a `http://localhost:5173` → "Registrarme" → elige **Cliente** o **Repartidor** y completa el formulario.
+2. Inicia sesión con ese correo y contraseña. Según el rol, te redirige a:
+   - **Cliente** → `/client/home` (crear pedidos, ver historial, calificar al entregarse)
+   - **Repartidor** → `/rider/board` (ver pedidos disponibles, aceptar, marcar entregado, ver historial y calificaciones)
+3. Para probar el flujo completo necesitas al menos un usuario Cliente y uno Repartidor (puedes usar dos pestañas/navegadores distintos, uno logueado con cada rol).
 
 ---
 
 ## Conexión con el backend
 
-Este frontend se comunica con la API a través de una instancia de Axios configurada en `src/services/api.ts`, apuntando a:
+La instancia de Axios (`src/services/api.ts`) y la conexión de WebSocket (`src/services/socket.service.ts`) toman la URL del backend desde las variables de entorno:
 
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_SOCKET_URL=http://localhost:3000
 ```
-http://localhost:3000
-```
 
-### Requisito: CORS habilitado en el backend
-
-El backend (NestJS) debe tener CORS habilitado para aceptar peticiones desde `http://localhost:5173`. Esto ya debería estar configurado en `Backend/delivery-flash-be/src/main.ts`:
-
-```typescript
-app.enableCors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-});
-```
-### Orden recomendado para levantar el entorno completo
-
-```bash
-cd Backend/delivery-flash-be
-npm run start:dev
-
-cd Frontend/delivery-flash-fe
-npm run dev
-```
+El backend debe tener CORS habilitado para `http://localhost:5173` (ya viene configurado en `Backend/src/main.ts`).
 
 ---
 
 ## Estructura del proyecto
 
 ```
-delivery-flash-fe/
-├── public/                      
+Frontend/
+├── public/
 ├── src/
 │   ├── assets/
-│   │   └── main.css              
-│   ├── components/               
-│   │   └── auth/
-│   ├── views/    # Aca van las vistas jsjs                 
-│   │   └── auth/
+│   ├── components/
+│   │   ├── auth/          # Formularios y modales de login/registro
+│   │   ├── client/        # RatingStars (calificar al repartidor)
+│   │   └── rider/         # OrderCard (tarjeta de pedido disponible)
+│   ├── views/
+│   │   ├── auth/          # LoginView, RegisterClientView, RegisterRiderView
+│   │   ├── client/        # ClientHomeView, CreateOrderView, OrderTrackingView
+│   │   ├── rider/         # RiderBoardView
+│   │   └── ProfileView.vue
 │   ├── router/
-│   │   └── index.ts              
-│   ├── stores/                   
-│   │   └── auth.store.ts         
-│   ├── services/                 
-│   │   ├── api.ts                
-│   │   └── auth.service.ts       
-│   ├── types/                    
-│   │   └── auth.types.ts
-│   ├── App.vue                   
-│   └── main.ts                     
+│   │   └── index.ts
+│   ├── stores/
+│   │   ├── auth.store.ts      # Sesión (token, usuario)
+│   │   └── orders.store.ts    # Pedidos del repartidor + WebSocket
+│   ├── services/
+│   │   ├── api.ts              # Instancia Axios (con interceptor JWT)
+│   │   ├── socket.service.ts   # Conexión socket.io
+│   │   ├── auth.service.ts
+│   │   └── order.service.ts
+│   ├── types/
+│   │   ├── auth.types.ts
+│   │   └── order.types.ts
+│   ├── App.vue
+│   └── main.ts
 ├── index.html
-├── vite.config.ts   #plugin de Tailwind
+├── vite.config.ts
 ├── tsconfig.json
 └── package.json
 ```
 
+---
 
 ## Rutas implementadas
 
-| Ruta | Vista | Descripción |
-|---|---|---|
-| `/` | — | Redirige a `/login` |
-| `/login` | `LoginView.vue` | Formulario de inicio de sesión |
-| `/register` | `RegisterChoiceView.vue` | Selección entre registro de Cliente o Repartidor |
-| `/register/client` | `RegisterClientView.vue` | Formulario de registro de cliente |
+| Ruta | Vista | Rol | Descripción |
+|---|---|---|---|
+| `/` | `HommePageView.vue` | público | Landing page |
+| `/login` | `LoginView.vue` | público | Inicio de sesión |
+| `/register/client` | `RegisterClientView.vue` | público | Registro de cliente |
+| `/register/driver` | `RegisterRiderView.vue` | público | Registro de repartidor |
+| `/client/home` | `ClientHomeView.vue` | CLIENT | Lista de mis pedidos + crear nuevo |
+| `/client/orders/new` | `CreateOrderView.vue` | CLIENT | Formulario para solicitar un envío |
+| `/client/orders/:id` | `OrderTrackingView.vue` | CLIENT | Seguimiento del pedido y calificación al entregarse |
+| `/rider/board` | `RiderBoardView.vue` | RIDER | Pedidos disponibles, pedido activo e historial de entregas |
+| `/profile` | `ProfileView.vue` | autenticado | Perfil básico (nombre, edad, correo, vehículo si es repartidor) |
 
+Las rutas con rol se protegen en `router/index.ts` con un `beforeEach` que verifica sesión y rol contra el store de auth.
 
 ---
 
@@ -126,7 +180,4 @@ delivery-flash-fe/
 | `npm run dev` | Levanta el servidor de desarrollo (`http://localhost:5173`), con hot reload |
 | `npm run build` | Compila la app para producción (genera carpeta `dist/`) |
 | `npm run preview` | Sirve localmente el build de producción, para probarlo antes de desplegar |
-| `npm run lint` | Corre ESLint y corrige automáticamente lo que pueda |
-| `npm run format` | Formatea el código con Prettier |
-
----
+| `npm run type-check` | Corre el chequeo de tipos con `vue-tsc` |
