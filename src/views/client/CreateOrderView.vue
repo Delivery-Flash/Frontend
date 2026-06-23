@@ -41,23 +41,54 @@ async function submit() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow p-6 w-full max-w-md">
-      <h1 class="text-xl font-semibold mb-4">Nuevo pedido</h1>
+  <div class="min-h-screen bg-gradient-to-br from-teal-50 via-slate-50 to-teal-100 relative overflow-hidden flex items-center justify-center p-6">
+    <div aria-hidden class="absolute inset-0 -z-10 overflow-hidden">
+      <div class="absolute -left-24 top-8 w-[420px] h-[420px] bg-teal-200/30 rounded-full filter blur-3xl"></div>
+      <div class="absolute -right-24 bottom-12 w-[320px] h-[320px] bg-slate-200/40 rounded-full filter blur-2xl"></div>
+    </div>
 
-      <div class="flex flex-col gap-3">
-        <input v-model="origin" type="text" placeholder="Origen" class="border rounded-lg px-3 py-2" />
-        <input v-model="destination" type="text" placeholder="Destino" class="border rounded-lg px-3 py-2" />
-        <textarea v-model="description" placeholder="Descripción del paquete (opcional)" class="border rounded-lg px-3 py-2" />
-        <input v-model.number="distanceKm" type="number" min="0.1" step="0.1" placeholder="Distancia (km)" class="border rounded-lg px-3 py-2" />
+    <div class="w-full max-w-2xl">
+      <div class="flex items-start gap-6 mb-6">
+        <div class="w-12 h-12 bg-teal-600 rounded flex items-center justify-center text-white font-bold">DF</div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800">Nuevo pedido</h1>
+          <p class="text-sm text-gray-500 mt-1">Completa los datos para solicitar un envío rápido y confiable.</p>
+        </div>
+      </div>
 
-        <p class="text-sm text-slate-500">Precio sugerido: <span class="font-medium text-slate-800">Q{{ suggestedPrice }}</span></p>
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="flex flex-col gap-3">
+            <input v-model="origin" type="text" placeholder="Origen" class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-100" />
+            <input v-model="destination" type="text" placeholder="Destino" class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-100" />
+            <textarea v-model="description" placeholder="Descripción del paquete (opcional)" class="border rounded-lg px-3 py-2 h-24 resize-none" />
+            <input v-model.number="distanceKm" type="number" min="0.1" step="0.1" placeholder="Distancia (km)" class="border rounded-lg px-3 py-2" />
+          </div>
 
-        <p v-if="errorMessage" class="text-red-600 text-sm">{{ errorMessage }}</p>
+          <div class="flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800">Resumen</h3>
+              <p class="text-sm text-gray-500 mt-2">Revisa los datos antes de enviar tu solicitud.</p>
 
-        <button @click="submit" :disabled="loading" class="bg-teal-600 text-white rounded-lg py-2 disabled:opacity-50">
-          {{ loading ? 'Creando...' : 'Solicitar envío' }}
-        </button>
+              <ul class="mt-4 text-sm text-gray-600 space-y-2">
+                <li><span class="font-medium text-gray-800">Origen:</span> <span class="ml-2">{{ origin || '—' }}</span></li>
+                <li><span class="font-medium text-gray-800">Destino:</span> <span class="ml-2">{{ destination || '—' }}</span></li>
+                <li><span class="font-medium text-gray-800">Distancia:</span> <span class="ml-2">{{ distanceKm ? distanceKm + ' km' : '—' }}</span></li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <p class="text-sm text-slate-500">Precio sugerido:</p>
+              <div class="flex items-center justify-between mt-2">
+                <span class="text-2xl font-extrabold text-teal-600">Q{{ suggestedPrice }}</span>
+                <button @click="submit" :disabled="loading" class="bg-teal-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-teal-700 disabled:opacity-50">
+                  {{ loading ? 'Creando...' : 'Solicitar envío' }}
+                </button>
+              </div>
+              <p v-if="errorMessage" class="text-red-600 text-sm mt-3">{{ errorMessage }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

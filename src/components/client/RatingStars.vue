@@ -6,6 +6,7 @@ const props = defineProps<{ orderId: number }>()
 const emit = defineEmits<{ rated: [] }>()
 
 const stars = ref(0)
+const comment = ref('')
 const errorMessage = ref('')
 const loading = ref(false)
 
@@ -17,7 +18,7 @@ async function submit() {
   loading.value = true
   errorMessage.value = ''
   try {
-    await orderService.rateOrder(props.orderId, { stars: stars.value })
+    await orderService.rateOrder(props.orderId, { stars: stars.value, comment: comment.value })
     emit('rated')
   } catch {
     errorMessage.value = 'No se pudo enviar la calificación.'
@@ -41,8 +42,9 @@ async function submit() {
       >★</button>
     </div>
     <p v-if="errorMessage" class="text-red-600 text-sm mb-2">{{ errorMessage }}</p>
+    <textarea v-model="comment" placeholder="(Opcional) Deja un comentario" class="w-full border rounded-lg px-3 py-2 h-24 resize-none mb-3" />
     <button @click="submit" :disabled="loading" class="w-full bg-teal-600 text-white rounded-lg py-2 disabled:opacity-50">
-      {{ loading ? 'Enviando...' : 'Enviar calificación' }}
+      {{ loading ? 'Enviando...' : 'Enviar calificación y comentario' }}
     </button>
   </div>
 </template>

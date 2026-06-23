@@ -16,6 +16,7 @@ export const useOrdersStore = defineStore('orders', () => {
     errorMessage.value = ''
     try {
       availableOrders.value = await orderService.getAvailableOrders()
+      console.log('availableOrders:', availableOrders.value)
     } catch {
       errorMessage.value = 'No se pudieron cargar los pedidos disponibles.'
     } finally {
@@ -52,6 +53,7 @@ export const useOrdersStore = defineStore('orders', () => {
       myOrders.value = myOrders.value.map((o) => (o.id === updated.id ? updated : o))
     })
   }
+  
 
   return {
     availableOrders,

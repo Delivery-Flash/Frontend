@@ -26,6 +26,8 @@ export async function rateOrder(id: number, payload: RatingPayload): Promise<voi
   await api.post(`/orders/${id}/rating`, payload)
 }
 
+
+
 export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
   const { data } = await api.post<Order>('/orders', payload)
   return data

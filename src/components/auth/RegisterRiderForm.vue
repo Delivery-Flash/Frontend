@@ -10,7 +10,9 @@ const lastName = ref('')
 const age = ref<number | null>(null)
 const email = ref('')
 const password = ref('')
-const vehicle = ref('')
+const licensePlate = ref('')
+const vehicleType = ref('')
+const vehicleModel = ref('')
 
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -28,7 +30,10 @@ async function handleSubmit() {
       age: age.value as number,
       email: email.value,
       password: password.value,
-      vehicle: vehicle.value,
+      license_plate: licensePlate.value,
+      vehicle_type: vehicleType.value,
+      vehicle_model: vehicleModel.value,
+      zone: 'ZONA_1',
     })
     successMessage.value = '¡Cuenta creada! Redirigiendo...'
     setTimeout(() => router.push('/'), 1200)
@@ -86,15 +91,46 @@ async function handleSubmit() {
     </div>
 
     <div>
-      <label for="vehicle" class="block text-sm font-medium text-gray-700 mb-1">
-        Vehículo
+      <label for="licensePlate" class="block text-sm font-medium text-gray-700 mb-1">
+        Placa
       </label>
       <input
-        id="vehicle"
-        v-model="vehicle"
+        id="licensePlate"
+        v-model="licensePlate"
         type="text"
         required
-        placeholder="Moto, Carro, Bicicleta..."
+        placeholder="P-001XYZ"
+        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+      />
+    </div>
+
+    <div>
+      <label for="vehicleType" class="block text-sm font-medium text-gray-700 mb-1">
+        Tipo de vehículo
+      </label>
+      <select
+        id="vehicleType"
+        v-model="vehicleType"
+        required
+        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+      >
+        <option value="" disabled>Seleccioná un tipo</option>
+        <option value="MOTO">Moto</option>
+        <option value="CARRO">Carro</option>
+        <option value="BICICLETA">Bicicleta</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="vehicleModel" class="block text-sm font-medium text-gray-700 mb-1">
+        Modelo del vehículo
+      </label>
+      <input
+        id="vehicleModel"
+        v-model="vehicleModel"
+        type="text"
+        required
+        placeholder="Honda CB150"
         class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
       />
     </div>

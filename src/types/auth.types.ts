@@ -30,7 +30,10 @@ export interface RegisterRiderPayload {
   age: number
   email: string
   password: string
-  vehicle: string
+  license_plate: string
+  vehicle_type: string
+  vehicle_model: string
+  zone: string
 }
 
 export interface UserProfile {

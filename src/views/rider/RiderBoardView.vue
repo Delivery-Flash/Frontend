@@ -95,8 +95,7 @@ onUnmounted(() => disconnectSocket())
         <div class="flex justify-between items-center">
           <div>
             <p class="font-medium">{{ order.origin }} → {{ order.destination }}</p>
-            <p class="text-sm text-slate-500">Q{{ order.price.toFixed(2) }}</p>
-          </div>
+            <p class="text-sm text-slate-500">Q{{ parseFloat(order.final_price ?? order.base_fare ?? '0').toFixed(2) }}</p>          </div>
           <div class="text-right">
             <span
               class="px-3 py-1 rounded-full text-xs font-medium"

@@ -12,7 +12,8 @@ export interface Order {
   origin: string
   destination: string
   description?: string
-  price: number
+  final_price?: string | null
+  base_fare?: string | null
   zone: string
   status: OrderStatus
   clientId: number
@@ -23,6 +24,7 @@ export interface Order {
 
 export interface RatingPayload {
   stars: number
+  comment?: string
 }
 export interface CreateOrderPayload {
   origin: string
