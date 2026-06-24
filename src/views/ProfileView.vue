@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { UserProfile } from '@/types/auth.types'
-import { getProfile, updateProfilePhoto } from '@/services/auth.service'
+import type { UserProfile, VehicleProfile } from '@/types/auth.types'
+import { getProfile, updateProfilePhoto, getProfileVehicle } from '@/services/auth.service'
 
 const router = useRouter()
 const profile = ref<UserProfile | null>(null)
@@ -12,6 +12,7 @@ const showPhotoForm = ref(false)
 const photoLoading = ref(false)
 const photoSuccess = ref(false)
 const photoError = ref('')
+const profileVehicle = ref<VehicleProfile | null>(null)
 
 const initials = computed(() => {
   if (!profile.value) return ''
@@ -24,10 +25,15 @@ async function loadProfile() {
   try {
     profile.value = await getProfile()
     photoUrl.value = profile.value.profile_photo ?? ''
+    // evalua si es un rider
+    if(profile.value.role === 'RIDER') {
+      profileVehicle.value = await getProfileVehicle()
+    }
   } catch {
     errorMessage.value = 'No se pudo cargar tu perfil.'
   }
 }
+
 
 async function savePhoto() {
   if (!photoUrl.value.trim()) {
@@ -172,15 +178,68 @@ onMounted(loadProfile)
               </div>
             </div>
 
-            <div v-if="profile.role === 'RIDER'" class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-teal-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-              </svg>
-              <div>
-                <p class="text-xs text-slate-400">Vehículo</p>
-                <p class="text-slate-800 font-medium">{{ profile.vehicle || 'No especificado' }}</p>
-              </div>
-            </div>
+            <div v-if="profile.role === 'RIDER'"
+     class="flex items-start gap-4 p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+
+  <!-- Icon -->
+  <div class="mt-1">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-5 h-5 text-teal-500"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+      <path stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+    </svg>
+  </div>
+
+  <!-- Content -->
+  <div class="space-y-2 w-full">
+
+    <!-- Title -->
+    <div>
+      <p class="text-xs text-slate-400 uppercase tracking-wide">
+        Vehículo
+      </p>
+
+      <p class="text-base font-semibold text-slate-800">
+        {{ profileVehicle?.vehicle_model || 'No especificado' }}
+      </p>
+    </div>
+
+    <!-- Plate -->
+    <div class="flex justify-between text-sm">
+      <span class="text-slate-500">Placa</span>
+      <span class="text-slate-800 font-medium">
+        {{ profileVehicle?.license_plate || 'Sin placa' }}
+      </span>
+    </div>
+
+    <!-- Type -->
+    <div class="flex justify-between text-sm">
+      <span class="text-slate-500">Tipo</span>
+      <span class="text-slate-800 font-medium">
+        {{ profileVehicle?.vehicle_type || 'No definido' }}
+      </span>
+    </div>
+
+    <!-- Verification -->
+    <div class="flex justify-between text-sm pt-1 border-t border-slate-100">
+
+      <span class="text-slate-500">Estado</span>
+
+      <span class="font-semibold"
+            :class="profileVehicle?.is_verified ? 'text-green-600' : 'text-red-500'">
+
+        {{ profileVehicle?.is_verified ? 'Verificado' : 'No verificado' }}
+      </span>
+
+    </div>
+
+  </div>
+</div>
           </div>
         </template>
 

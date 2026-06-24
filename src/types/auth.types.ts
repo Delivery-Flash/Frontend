@@ -47,3 +47,16 @@ export interface UserProfile {
   profile_photo?: string | null
   createdAt: string
 }
+
+export interface VehicleProfile {
+  // "license_plate": "p-001abc",
+  // "vehicle_type": "BICICLETA",
+  // "vehicle_model": "hona",
+  // "is_verified": false,
+  // "createdAt": "2026-06-25T23:15:30.877Z"
+  license_plate: string | null
+  vehicle_type: string | null
+  vehicle_model: string | null
+  is_verified: boolean | null
+  createdAt: string | number | Date
+}

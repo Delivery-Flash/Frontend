@@ -86,10 +86,12 @@ const isRegisterOpen = ref(false)
       </div>
 
       <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-100">
-        <div class="aspect-video bg-slate-100 rounded-lg mb-4 flex items-center justify-center text-slate-400 text-sm">
-          Imagen del producto
-        </div>
-        <h3 class="font-semibold text-gray-800 text-lg">Combo especial del día</h3>
+        <img
+          src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=60"
+          alt="Producto"
+          class="aspect-video w-full rounded-lg mb-4 object-cover"
+        />
+        <h3 class="font-semibold text-gray-800 text-lg">Realiza tus envios de forma segura</h3>
         <p class="text-sm text-gray-500 mt-1">
           Entrega garantizada que sera rapida.
         </p>
@@ -99,7 +101,7 @@ const isRegisterOpen = ref(false)
             @click="openDrawer"
             class="bg-teal-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-teal-700 transition-colors cursor-pointer"
           >
-            Pedir este artículo
+            Enviar un pedido como este
           </button>
         </div>
       </div>

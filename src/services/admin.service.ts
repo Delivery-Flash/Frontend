@@ -27,12 +27,23 @@ export interface OrdersReport {
   available: number
   accepted: number
   delivered: number
+  totalOrders: number
+  byStatus: {
+    ACCEPTED: number
+    DELIVERED: number
+    AVAILABLE: number
+  }
 }
 
 export interface EarningsReport {
   totalRevenue: string | number
   totalOrders: number
   averageOrderValue?: string | number
+
+  totalRecords: number
+  totalNet: string | number
+  totalGross: string | number
+  totalFee: string | number
 }
 
 export async function getAllUsers(): Promise<AdminUser[]> {

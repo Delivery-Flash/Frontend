@@ -26,7 +26,9 @@ async function handleSubmit() {
     emit('success')
     if (response.user.role === 'RIDER') {
       router.push({ name: 'rider-board' })
-    } else {
+    } else if(response.user.role === 'ADMIN') {
+      router.push({ name: 'admin-dashboard' })
+    }else {
       router.push({ name: 'client-home' })
     }
   } catch (error) {

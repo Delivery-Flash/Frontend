@@ -50,9 +50,14 @@ async function loadOverview() {
       adminService.getEarningsReport(),
       earningsService.getGlobalEarningsSummary(),
     ])
+    console.log('Fetched reports:', { orders, earnings, summary })
     ordersReport.value = orders
     earningsReport.value = earnings
     globalSummary.value = summary
+
+    console.log('Orders report:', ordersReport.value)
+    console.log('Earnings report:', earningsReport.value)
+    console.log('Global summary:', globalSummary.value)
   } catch {
     errorMessage.value = 'No se pudieron cargar los reportes.'
   } finally {
@@ -176,44 +181,76 @@ onMounted(() => loadOverview())
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white rounded-xl shadow border border-slate-100 p-4 text-center">
               <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Total</p>
-              <p class="text-3xl font-extrabold text-gray-800">{{ ordersReport.total }}</p>
+              <p class="text-3xl font-extrabold text-gray-800">{{ ordersReport.totalOrders }}</p>
             </div>
-            <div class="bg-white rounded-xl shadow border border-slate-100 p-4 text-center">
+            <!-- <div class="bg-white rounded-xl shadow border border-slate-100 p-4 text-center">
               <p class="text-xs text-amber-500 uppercase tracking-wide font-semibold mb-1">Disponibles</p>
               <p class="text-3xl font-extrabold text-amber-600">{{ ordersReport.available }}</p>
-            </div>
+            </div> -->
             <div class="bg-white rounded-xl shadow border border-slate-100 p-4 text-center">
               <p class="text-xs text-blue-500 uppercase tracking-wide font-semibold mb-1">Aceptados</p>
-              <p class="text-3xl font-extrabold text-blue-600">{{ ordersReport.accepted }}</p>
+              <p class="text-3xl font-extrabold text-blue-600">{{ ordersReport.byStatus.ACCEPTED}}</p>
             </div>
             <div class="bg-white rounded-xl shadow border border-slate-100 p-4 text-center">
               <p class="text-xs text-emerald-500 uppercase tracking-wide font-semibold mb-1">Entregados</p>
-              <p class="text-3xl font-extrabold text-emerald-600">{{ ordersReport.delivered }}</p>
+              <p class="text-3xl font-extrabold text-emerald-600">{{ ordersReport.byStatus.DELIVERED }}</p>
             </div>
           </div>
         </div>
 
         <!-- Earnings report -->
-        <div v-if="earningsReport || globalSummary" class="mb-6">
+        <div v-if="earningsReport" class="mb-6">
           <h2 class="text-base font-semibold text-gray-700 mb-3">Reporte de ganancias</h2>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div v-if="earningsReport" class="bg-white rounded-xl shadow border border-slate-100 p-5">
-              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Ingresos de plataforma</p>
-              <p class="text-3xl font-extrabold text-teal-600">Q{{ formatAmount(earningsReport.totalRevenue) }}</p>
-              <p class="text-xs text-slate-400 mt-1">{{ earningsReport.totalOrders }} pedidos</p>
+
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-5">
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+                Ingresos brutos
+              </p>
+
+              <p class="text-3xl font-extrabold text-teal-600">
+                Q{{ formatAmount(earningsReport?.totalGross) }}
+              </p>
+
+              <p class="text-xs text-slate-400 mt-1">
+                {{ earningsReport?.totalRecords }} pedidos
+              </p>
             </div>
-            <div v-if="globalSummary" class="bg-white rounded-xl shadow border border-slate-100 p-5">
-              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Pago a repartidores</p>
-              <p class="text-3xl font-extrabold text-blue-600">Q{{ formatAmount(globalSummary.totalRiders) }}</p>
+
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-5">
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+                Comisiones / costos
+              </p>
+
+              <p class="text-3xl font-extrabold text-blue-600">
+                Q{{ formatAmount(earningsReport?.totalFee) }}
+              </p>
+
+              <p class="text-xs text-slate-400 mt-1">
+                Total descontado
+              </p>
             </div>
-            <div v-if="earningsReport?.averageOrderValue !== undefined" class="bg-white rounded-xl shadow border border-slate-100 p-5">
-              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Ticket promedio</p>
-              <p class="text-3xl font-extrabold text-gray-800">Q{{ formatAmount(earningsReport.averageOrderValue) }}</p>
+
+            <div class="bg-white rounded-xl shadow border border-slate-100 p-5">
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+                Ingresos netos
+              </p>
+
+              <p class="text-3xl font-extrabold text-gray-800">
+                Q{{ formatAmount(earningsReport?.totalNet) }}
+              </p>
+
+              <p class="text-xs text-slate-400 mt-1">
+                Después de comisiones
+              </p>
             </div>
+
           </div>
         </div>
 
-        <div v-if="!ordersReport && !earningsReport && !loading" class="bg-white rounded-2xl shadow border border-slate-100 p-12 text-center text-slate-500">
+        <div v-if="!earningsReport && !loading"
+            class="bg-white rounded-2xl shadow border border-slate-100 p-12 text-center text-slate-500">
           No hay datos disponibles.
         </div>
       </div>

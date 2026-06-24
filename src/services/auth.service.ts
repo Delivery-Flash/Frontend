@@ -1,5 +1,5 @@
 import api from './api'
-import type { LoginPayload, RegisterClientPayload, RegisterRiderPayload, UserProfile, LoginResponse, AuthUser } from '@/types/auth.types'
+import type { LoginPayload, RegisterClientPayload, RegisterRiderPayload, UserProfile, LoginResponse, AuthUser, VehicleProfile } from '@/types/auth.types'
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>('/auth/login', payload)
@@ -23,4 +23,9 @@ export async function getProfile(): Promise<UserProfile> {
 
 export async function updateProfilePhoto(photoUrl: string): Promise<void> {
   await api.patch('/auth/photo', { profile_photo: photoUrl })
+}
+
+export async function getProfileVehicle(): Promise<VehicleProfile> {
+  const { data } = await api.get<VehicleProfile>('/auth/rider/profile')
+  return data
 }

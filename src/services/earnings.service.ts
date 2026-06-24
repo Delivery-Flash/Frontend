@@ -5,7 +5,10 @@ export interface Earning {
   orderId: number
   riderId: number
   amount: string
+  net_amount: string | number
+  gross_amount: string | number
   createdAt: string
+  platform_fee: string | number
   order?: {
     origin: string
     destination: string
@@ -16,12 +19,20 @@ export interface EarningsSummary {
   total: string | number
   count: number
   average?: string | number
+
+  total_trips: number
+  total_gross: string | number
+  total_fees: string | number
+  total_earned: string | number
 }
 
 export interface AdminEarningsSummary {
   totalPlatform: string | number
   totalRiders: string | number
   totalOrders: number
+
+  
+  
 }
 
 export async function getMyEarnings(): Promise<Earning[]> {

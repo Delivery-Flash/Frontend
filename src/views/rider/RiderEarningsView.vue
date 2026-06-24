@@ -35,6 +35,9 @@ async function loadEarnings() {
     ])
     earnings.value = earningsData
     summary.value = summaryData
+
+    console.log('Earnings:', earningsData)
+    console.log('Summary:', summaryData)
   } catch {
     errorMessage.value = 'No se pudieron cargar tus ganancias.'
   } finally {
@@ -79,18 +82,51 @@ onMounted(loadEarnings)
       <template v-else>
         <!-- Summary cards -->
         <div v-if="summary" class="grid grid-cols-2 gap-4 mb-6">
+
+          <!-- Total ganado -->
           <div class="bg-white rounded-2xl shadow border border-slate-100 p-5">
-            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Total ganado</p>
-            <p class="text-3xl font-extrabold text-teal-600">Q{{ formatAmount(summary.total) }}</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+              Total ganado
+            </p>
+
+            <p class="text-3xl font-extrabold text-teal-600">
+              Q{{ formatAmount(Number(summary.total_earned)) }}
+            </p>
           </div>
+
+          <!-- Entregas completadas -->
           <div class="bg-white rounded-2xl shadow border border-slate-100 p-5">
-            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Entregas completadas</p>
-            <p class="text-3xl font-extrabold text-gray-800">{{ summary.count }}</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+              Entregas completadas
+            </p>
+
+            <p class="text-3xl font-extrabold text-gray-800">
+              {{ summary.total_trips }}
+            </p>
           </div>
-          <div v-if="summary.average !== undefined" class="col-span-2 bg-white rounded-2xl shadow border border-slate-100 p-5">
-            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">Ganancia promedio por entrega</p>
-            <p class="text-2xl font-extrabold text-gray-800">Q{{ formatAmount(summary.average) }}</p>
+
+          <!-- Ingreso bruto -->
+          <!-- <div class="bg-white rounded-2xl shadow border border-slate-100 p-5">
+            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+              Ingreso bruto
+            </p>
+
+            <p class="text-3xl font-extrabold text-blue-600">
+              Q{{ formatAmount(Number(summary.total_gross)) }}
+            </p>
+          </div> -->
+
+          <!-- Comisiones / Fees -->
+          <div class="bg-white rounded-2xl shadow border border-slate-100 p-5">
+            <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
+              Comisiones Plataforma
+            </p>
+
+            <p class="text-3xl font-extrabold text-red-500">
+              Q{{ formatAmount(Number(summary.total_fees)) }}
+            </p>
           </div>
+
         </div>
 
         <!-- Empty state -->
@@ -111,27 +147,49 @@ onMounted(loadEarnings)
         <div v-else>
           <h2 class="text-base font-semibold text-gray-700 mb-3">Historial de ganancias</h2>
           <div class="flex flex-col gap-3">
-            <div
-              v-for="earning in earnings"
-              :key="earning.id"
-              class="bg-white rounded-xl shadow border border-slate-100 p-4 flex items-center justify-between"
-            >
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-800">
-                    {{ earning.order ? `${earning.order.origin} → ${earning.order.destination}` : `Pedido #${earning.orderId}` }}
-                  </p>
-                  <p class="text-xs text-slate-400">{{ formatDate(earning.createdAt) }}</p>
-                </div>
-              </div>
-              <span class="text-base font-extrabold text-teal-600">Q{{ formatAmount(earning.amount) }}</span>
-            </div>
-          </div>
+  <div
+    v-for="earning in earnings"
+    :key="earning.id"
+    class="bg-white rounded-xl shadow border border-slate-100 p-4 flex items-center justify-between"
+  >
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-800">
+          {{ earning.order ? `${earning.order.origin} → ${earning.order.destination}` : `Pedido #${earning.orderId}` }}
+        </p>
+        <p class="text-xs text-slate-400">{{ formatDate(earning.createdAt) }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 text-right">
+      <div>
+        <p class="text-[11px] uppercase tracking-wide text-slate-400">Total</p>
+        <p class="text-sm font-bold text-slate-700">
+          Q{{ formatAmount(earning.gross_amount) }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-wide text-slate-400">Comisión</p>
+        <p class="text-sm font-bold text-red-600">
+          -Q{{ formatAmount(earning.platform_fee) }}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-wide text-slate-400">Neto</p>
+        <p class="text-base font-extrabold text-teal-600">
+          Q{{ formatAmount(earning.net_amount) }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </template>
     </div>
