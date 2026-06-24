@@ -44,6 +44,6 @@ export interface UserProfile {
   email: string
   role: string
   vehicle?: string | null
+  profile_photo?: string | null
   createdAt: string
 }
-

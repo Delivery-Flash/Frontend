@@ -61,6 +61,7 @@ onMounted(loadOrders)
 
         <div class="flex items-center gap-3">
           <button @click="router.push({ name: 'create-order' })" class="bg-teal-600 text-white rounded-lg px-4 py-2 shadow-sm hover:bg-teal-700">+ Nuevo pedido</button>
+          <button @click="router.push({ name: 'notifications' })" class="bg-white text-slate-700 border border-slate-200 rounded-lg px-4 py-2 hover:bg-slate-50">Notificaciones</button>
           <button @click="router.push({ name: 'profile' })" class="bg-white text-teal-700 border border-teal-200 rounded-lg px-4 py-2 hover:bg-teal-50">Mi perfil</button>
           <button @click="handleLogout" class="bg-white text-slate-700 border border-slate-200 rounded-lg px-4 py-2 hover:bg-slate-50">Cerrar sesión</button>
         </div>
