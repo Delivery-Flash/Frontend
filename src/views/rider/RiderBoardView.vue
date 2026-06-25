@@ -39,10 +39,16 @@ onUnmounted(() => disconnectSocket())
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Tablero de pedidos</h1>
       <div class="flex gap-2">
-        <button @click="router.push({ name: 'profile' })" class="bg-slate-200 text-slate-700 rounded-lg px-4 py-2">
+        <button @click="router.push({ name: 'rider-earnings' })" class="bg-teal-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-teal-700 transition-colors">
+          Mis ganancias
+        </button>
+        <button @click="router.push({ name: 'notifications' })" class="bg-slate-200 text-slate-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-300 transition-colors">
+          Notificaciones
+        </button>
+        <button @click="router.push({ name: 'profile' })" class="bg-slate-200 text-slate-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-300 transition-colors">
           Mi perfil
         </button>
-        <button @click="handleLogout" class="bg-slate-200 text-slate-700 rounded-lg px-4 py-2">
+        <button @click="handleLogout" class="bg-slate-200 text-slate-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-slate-300 transition-colors">
           Cerrar sesión
         </button>
       </div>

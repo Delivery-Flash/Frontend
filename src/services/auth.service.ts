@@ -20,3 +20,7 @@ export async function getProfile(): Promise<UserProfile> {
   const { data } = await api.get<UserProfile>('/auth/me')
   return data
 }
+
+export async function updateProfilePhoto(photoUrl: string): Promise<void> {
+  await api.patch('/auth/photo', { profile_photo: photoUrl })
+}

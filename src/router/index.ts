@@ -9,6 +9,9 @@ import { useAuthStore } from '@/stores/auth.store'
 import CreateOrderView from '@/views/client/CreateOrderView.vue'
 import RegisterRiderView from '@/views/auth/RegisterRiderView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import NotificationsView from '@/views/NotificationsView.vue'
+import RiderEarningsView from '@/views/rider/RiderEarningsView.vue'
+import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 
 
 
@@ -31,12 +34,29 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'RIDER' },
     },
     {
+      path: '/rider/earnings',
+      name: 'rider-earnings',
+      component: RiderEarningsView,
+      meta: { requiresAuth: true, role: 'RIDER' },
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
       meta: { requiresAuth: true },
     },
-
+    {
+      path: '/notifications',
+      name: 'notifications',
+      component: NotificationsView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/admin/dashboard',
+      name: 'admin-dashboard',
+      component: AdminDashboardView,
+      meta: { requiresAuth: true, role: 'ADMIN' },
+    },
     {
       path: '/register/driver',
       name: 'register-driver',
@@ -51,7 +71,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HommePageView, 
+      component: HommePageView,
     },
     {
       path: '/login',
